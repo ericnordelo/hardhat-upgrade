@@ -71,7 +71,7 @@ task('upgrade', 'Upgrades an upgradeable contract')
           // update the implementation
           await proxy.upgradeTo(implementation.address);
         } else {
-          console.log('Unhandled error. Please contract developers');
+          console.log('Unhandled error. Please contact developers');
           return;
         }
 
