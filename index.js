@@ -1,5 +1,4 @@
 const { extendConfig } = require('hardhat/config');
-const { hre, ethers } = require('hardhat');
 
 extendConfig(function (config, userConfig) {
   config.upgradeable = Object.assign(
@@ -11,13 +10,12 @@ extendConfig(function (config, userConfig) {
   );
 });
 
-hre
-  .task('upgrade', 'Upgrades an upgradeable contract')
+task('upgrade', 'Upgrades an upgradeable contract')
   .addPositionalParam('contract', 'The contract name')
   .addOptionalParam('args', 'The inputs for the constructor if needed')
   .setAction(async (taskArgs, hre) => {
     const contract = taskArgs.contract;
-    const { deployer } = await hre.getNamedAccounts();
+    const { deployer } = await getNamedAccounts();
 
     const beacons = hre.config.upgradeable.beacon;
     const uups = hre.config.upgradeable.uups;
@@ -46,7 +44,7 @@ hre
 
     try {
       // deploy new implementation
-      const implementation = await hre.deployments.deploy(contract + '_Implementation', {
+      let implementation = await deployments.deploy(contract + '_Implementation', {
         contract: contract,
         from: deployer,
         log: true,
@@ -58,7 +56,7 @@ hre
         if (isBeacon(contract)) {
           console.log('Upgrading', contract, 'beacon implementation...');
           // get the proxy
-          const beacon = await ethers.getContract(contract + 'Beacon');
+          let beacon = await ethers.getContract(contract + 'Beacon');
 
           // update the implementation
           await beacon.upgradeTo(implementation.address);
