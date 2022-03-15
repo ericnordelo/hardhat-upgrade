@@ -1,6 +1,6 @@
 {
   "name": "@ericnordelo/hardhat-upgrade",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A hardhat deploy extension for managing upgradeability of contracts",
   "main": "index.js",
   "peerDependencies": {
