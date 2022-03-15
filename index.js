@@ -13,6 +13,7 @@ extendConfig(function (config, userConfig) {
 task('upgrade', 'Upgrades an upgradeable contract')
   .addPositionalParam('contract', 'The contract name')
   .addOptionalParam('args', 'The inputs for the constructor if needed')
+  .addOptionalParam('libraries', 'The libraries to link')
   .setAction(async (taskArgs, hre) => {
     const contract = taskArgs.contract;
     const { deployer } = await getNamedAccounts();
@@ -37,9 +38,20 @@ task('upgrade', 'Upgrades an upgradeable contract')
     await hre.run('compile');
 
     let args = [];
+    let libraries = [];
 
     if (taskArgs.args) {
       args = taskArgs.args.split(',');
+    }
+
+    const librariesObject = {};
+    if (taskArgs.libraries) {
+      libraries = taskArgs.libraries.split(',');
+      libraries.forEach((libString) => {
+        const [libName, libAddress] = libString.split('=');
+
+        librariesObject[libName] = libAddress;
+      });
     }
 
     try {
@@ -49,6 +61,7 @@ task('upgrade', 'Upgrades an upgradeable contract')
         from: deployer,
         log: true,
         args,
+        libraries: librariesObject,
       });
 
       if (implementation.newlyDeployed) {
